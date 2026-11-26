@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { upgradeTvThumbnailUrl } from "@/lib/tv-thumbnail";
 import type { Channel, SectionFeed, Video } from "@/lib/types";
 import { formatDuration } from "@/components/VideoCard";
 
@@ -42,12 +43,17 @@ export default function TvGrid({
               <div className="relative aspect-video bg-black/40">
                 {video.thumbnail_url && (
                   <Image
-                    src={video.thumbnail_url}
+                    src={upgradeTvThumbnailUrl(video.thumbnail_url) ?? video.thumbnail_url}
                     alt=""
                     fill
                     priority={index === 0}
                     sizes="(max-width: 1280px) 33vw, 600px"
                     className="object-cover"
+                    onError={(event) => {
+                      if (video.thumbnail_url && !event.currentTarget.src.endsWith("/mqdefault.jpg")) {
+                        event.currentTarget.src = video.thumbnail_url;
+                      }
+                    }}
                   />
                 )}
                 {video.duration_seconds != null && (
