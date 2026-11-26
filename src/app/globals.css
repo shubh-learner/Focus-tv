@@ -1,0 +1,53 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  background-color: #f7f5f2;
+}
+
+body {
+  color: #2b2a28;
+}
+
+::selection {
+  background: #e6e2da;
+}
+
+/* Minimal scrollbar so the calm aesthetic holds on desktop too */
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: #e6e2da;
+  border-radius: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* TV ambient backdrop — slow warm/ink drift, still under reduced motion. */
+.tv-ambient {
+  background-color: #0b0a0f;
+  background-image:
+    radial-gradient(60% 55% at 18% 16%, rgba(196, 168, 130, 0.24) 0%, transparent 60%),
+    radial-gradient(55% 50% at 82% 28%, rgba(96, 120, 150, 0.24) 0%, transparent 62%),
+    radial-gradient(60% 60% at 50% 100%, rgba(120, 80, 90, 0.2) 0%, transparent 60%);
+  background-size: 140% 140%;
+  animation: tv-drift 30s ease-in-out infinite alternate;
+}
+
+@keyframes tv-drift {
+  from {
+    background-position: 0% 0%;
+  }
+  to {
+    background-position: 100% 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tv-ambient {
+    animation: none;
+  }
+}
