@@ -9,5 +9,8 @@ export async function GET(request: NextRequest) {
     await supabase.auth.exchangeCodeForSession(code);
   }
 
-  return NextResponse.redirect(new URL("/", request.url));
+  const isTv = request.cookies.get("tv_oauth")?.value === "1";
+  const response = NextResponse.redirect(new URL(isTv ? "/tv" : "/", request.url));
+  if (isTv) response.cookies.delete("tv_oauth");
+  return response;
 }

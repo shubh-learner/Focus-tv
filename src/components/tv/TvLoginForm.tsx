@@ -11,6 +11,23 @@ export default function TvLoginForm() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
+
+  async function handleGoogle() {
+    setError(null);
+    setGoogleLoading(true);
+    // Cookie survives the OAuth round trip so the callback can return to /tv.
+    document.cookie = "tv_oauth=1; path=/; max-age=600; SameSite=Lax";
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: { redirectTo: `${window.location.origin}/api/auth/callback` },
+    });
+    if (error) {
+      document.cookie = "tv_oauth=; path=/; max-age=0";
+      setError(error.message);
+      setGoogleLoading(false);
+    }
+  }
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -88,10 +105,20 @@ export default function TvLoginForm() {
       <button
         type="submit"
         data-focusable
-        disabled={loading}
-        className="w-full rounded-2xl bg-white/90 py-3 text-lg font-medium text-black transition duration-[220ms] focus:scale-[1.06] focus:outline-none focus:ring-2 focus:ring-white/70 disabled:opacity-50"
+        disabled={loading || googleLoading}
+        className="mb-3 w-full rounded-2xl bg-white/90 py-3 text-lg font-medium text-black transition duration-[220ms] focus:scale-[1.06] focus:outline-none focus:ring-2 focus:ring-white/70 disabled:opacity-50"
       >
         {loading ? "Signing in…" : "Sign in"}
+      </button>
+
+      <button
+        type="button"
+        data-focusable
+        onClick={handleGoogle}
+        disabled={loading || googleLoading}
+        className="w-full rounded-2xl border border-white/15 bg-white/10 py-3 text-lg font-medium text-white transition duration-[220ms] focus:scale-[1.06] focus:outline-none focus:ring-2 focus:ring-white/70 disabled:opacity-50"
+      >
+        {googleLoading ? "Opening Google…" : "Continue with Google"}
       </button>
     </form>
   );
